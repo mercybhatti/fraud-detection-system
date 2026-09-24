@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+pandas
+numpy
+scikit-learn
+xgboost
+joblib
+pydantic
+streamlit
+requests
+streamlit-cookies-controller

@@ -1,0 +1,4 @@
+{
+    "model_name": "XGBoost",
+    "fraud_threshold": 0.9500000000000001
+}
