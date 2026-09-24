@@ -23,7 +23,7 @@ st.set_page_config(
 # CONFIGURATION
 # =========================================================
 
-API_URL = "http://127.0.0.1:8000"
+API_URL = "https://fraud-detection-system-4o55.onrender.com"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATABASE_PATH = os.path.join(BASE_DIR, "users.db")
