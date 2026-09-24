@@ -761,7 +761,7 @@ def check_api_health():
     try:
         response = requests.get(
             f"{API_URL}/health",
-            timeout=5
+            timeout=30
         )
 
         return response.status_code == 200
