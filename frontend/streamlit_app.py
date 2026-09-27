@@ -23,7 +23,7 @@ st.set_page_config(
 # CONFIGURATION
 # =========================================================
 
-API_URL = "https://fraud-detection-system-4o55.onrender.com"
+API_URL = "https://fraud-detection-system-1-iuo2.onrender.com"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATABASE_PATH = os.path.join(BASE_DIR, "users.db")
