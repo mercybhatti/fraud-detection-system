@@ -587,18 +587,19 @@ if "logged_out" not in st.session_state:
     st.session_state.logged_out = False
 
 # Restore authentication from browser cookies after refresh
-browser_cookies = st.context.cookies
+if not st.session_state.logged_out:
+    cookies.getAll()
+    time.sleep(1)
 
-saved_authenticated = browser_cookies.get("authenticated")
-saved_username = browser_cookies.get("username")
+    saved_authenticated = cookies.get("authenticated")
+    saved_username = cookies.get("username")
 
-if (
-    not st.session_state.logged_out
-    and saved_authenticated in ("true", True, 1, "1")
-    and saved_username
-):
-    st.session_state.authenticated = True
-    st.session_state.username = saved_username
+    if (
+        saved_authenticated in ("true", True, 1, "1")
+        and saved_username
+    ):
+        st.session_state.authenticated = True
+        st.session_state.username = saved_username
 
 # =========================================================
 # LOGIN AND SIGNUP PAGE
