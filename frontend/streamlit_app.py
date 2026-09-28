@@ -28,10 +28,7 @@ API_URL = "https://fraud-detection-system-1-iuo2.onrender.com"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATABASE_PATH = os.path.join(BASE_DIR, "users.db")
 
-if "cookie_controller" not in st.session_state:
-    st.session_state.cookie_controller = CookieController()
-
-cookies = st.session_state.cookie_controller
+cookies = CookieController()
 
 # =========================================================
 # DATABASE FUNCTIONS
@@ -588,6 +585,7 @@ if "logged_out" not in st.session_state:
 
 # Restore authentication from browser cookies after refresh
 if not st.session_state.logged_out:
+
     cookies.getAll()
     time.sleep(1)
 
