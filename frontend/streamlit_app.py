@@ -1,8 +1,9 @@
 import os
-import sqlite3
 import hashlib
 import requests
 import time
+import psycopg2
+from psycopg2 import errors
 import streamlit as st
 from streamlit_cookies_controller import CookieController
 
@@ -25,8 +26,7 @@ st.set_page_config(
 
 API_URL = "https://fraud-detection-system-1-iuo2.onrender.com"
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATABASE_PATH = os.path.join(BASE_DIR, "users.db")
+DATABASE_URL = st.secrets["DATABASE_URL"]
 
 cookies = CookieController()
 
@@ -35,20 +35,10 @@ cookies = CookieController()
 # =========================================================
 
 def get_database_connection():
-    connection = sqlite3.connect(DATABASE_PATH)
-
-    connection.execute(
-        """
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE NOT NULL,
-            password_hash TEXT NOT NULL
-        )
-        """
+    return psycopg2.connect(
+        DATABASE_URL,
+        sslmode="require"
     )
-
-    connection.commit()
-    return connection
 
 
 def hash_password(password):
@@ -61,18 +51,27 @@ def register_user(username, password):
     connection = get_database_connection()
 
     try:
-        connection.execute(
+        cursor = connection.cursor()
+
+        cursor.execute(
             """
             INSERT INTO users (username, password_hash)
-            VALUES (?, ?)
+            VALUES (%s, %s)
             """,
-            (username, hash_password(password))
+            (
+                username,
+                hash_password(password)
+            )
         )
 
         connection.commit()
+
+        cursor.close()
+
         return True, "Account created successfully."
 
-    except sqlite3.IntegrityError:
+    except errors.UniqueViolation:
+        connection.rollback()
         return False, "This username already exists."
 
     finally:
@@ -82,22 +81,30 @@ def register_user(username, password):
 def authenticate_user(username, password):
     connection = get_database_connection()
 
-    cursor = connection.cursor()
+    try:
+        cursor = connection.cursor()
 
-    cursor.execute(
-        """
-        SELECT username
-        FROM users
-        WHERE username = ?
-        AND password_hash = ?
-        """,
-        (username, hash_password(password))
-    )
+        cursor.execute(
+            """
+            SELECT username
+            FROM users
+            WHERE username = %s
+            AND password_hash = %s
+            """,
+            (
+                username,
+                hash_password(password)
+            )
+        )
 
-    user = cursor.fetchone()
-    connection.close()
+        user = cursor.fetchone()
 
-    return user is not None
+        cursor.close()
+
+        return user is not None
+
+    finally:
+        connection.close()
 
 
 # =========================================================

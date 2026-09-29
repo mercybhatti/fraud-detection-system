@@ -9,3 +9,4 @@ pydantic
 streamlit
 requests
 streamlit-cookies-controller
+psycopg2-binary
